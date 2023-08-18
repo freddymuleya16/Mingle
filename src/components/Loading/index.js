@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components/native';
 import { ActivityIndicator } from 'react-native';
 import { useSelector } from 'react-redux';
+import config from '../../../default.config.json'
 
 const Container = styled.View`
   flex: 1;
@@ -20,14 +21,11 @@ const Container = styled.View`
 `;
 
 const Loading = () => {
-  const loading = useSelector((state) => state.auth.isLoading);
+  const loading = useSelector((state) => state.user.isLoading);
   if (loading) return (
-
     <Container>
-      <ActivityIndicator size="large" color="#db5353" />
+      <ActivityIndicator size="large" color={config.primaryColor} />
     </Container>
-
-
   );
 };
 

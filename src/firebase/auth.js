@@ -1,4 +1,4 @@
-import { 
+import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -12,15 +12,15 @@ import {
   fetchSignInMethodsForEmail,
   EmailAuthProvider,
   linkWithPopup,
-} from "firebase/auth"; 
+} from "firebase/auth";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
- 
-import { 
+
+import {
   doc,
   getDoc,
   collection,
@@ -33,26 +33,47 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { SET_LOADING, SET_USER_DATA, setLoading, setUserData } from "../redux/actions/userActions";
-import { FIREBASE_AUTH } from "../../firebase.config";
- 
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebase.config";
+
 export const signup = (email, password) => async (dispatch) => {
   dispatch(setLoading(true));
-  try { 
+
+  try {
+    console.log('Signup: Before creation');
+
     const userCredential = await createUserWithEmailAndPassword(
       FIREBASE_AUTH,
       email,
       password
     );
+
+    console.log('Signup: After creation');
+
     dispatch(
-      setUser({
+      setUserData({
         uid: userCredential.user.uid,
         email: userCredential.user.email,
         emailVerified: userCredential.user.emailVerified,
       })
     );
+
     dispatch(sendVerificationEmail());
+    dispatch(checkUserProfileCompletion());
+    console.log('Signup: User successfully created and verification email sent');
   } catch (error) {
-    console.log(error)
+    console.error('Signup Error:', error);
+
+    let errorMessage = 'An error occurred while signing up. Please try again later.';
+
+    if (error.code === 'auth/email-already-in-use') {
+      errorMessage = 'This email is already in use. Please use a different email.';
+    } else if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Please provide a valid email address.';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'The password is too weak. Please choose a stronger password.';
+    }
+    return errorMessage;
+    // Dispatch an action or set a state variable to show the user-friendly error message
   } finally {
     dispatch(setLoading(false));
   }
@@ -60,119 +81,174 @@ export const signup = (email, password) => async (dispatch) => {
 
 export const forgotPassword = (email) => async (dispatch) => {
   dispatch(setLoading(true));
+
   try {
-    const FIREBASE_AUTH = getAuth();
+    console.log('Forgot Password: Before sending password reset email');
+
     const actionCodeSettings = {
-      url: process.env.NEXT_PUBLIC_URLROOT + "FIREBASE_AUTH/login",
+      url: + "https://mingle-sa.vercel.app/auth/login",
       handleCodeInApp: true,
     };
-    await sendPasswordResetEmail(FIREBASE_AUTH, email, actionCodeSettings);
-  } catch (error) {
-    console.error(error);
-    dispatch(setError(error));
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
 
-export const resetPassword = (password, oobCode) => async (dispatch) => {
-  dispatch(setLoading(true));
-  try {
-    const FIREBASE_AUTH = getAuth();
+    await sendPasswordResetEmail(FIREBASE_AUTH, email);
 
-    await confirmPasswordReset(FIREBASE_AUTH, oobCode, password);
+    console.log('Forgot Password: Password reset email sent successfully');
   } catch (error) {
-    dispatch(setError(error));
+    console.error('Forgot Password Error:', error);
+
+    let errorMessage = 'An error occurred while sending the password reset email. Please try again later.';
+
+    if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Please provide a valid email address.';
+    } else if (error.code === 'auth/user-not-found') {
+      errorMessage = 'There is no user account associated with this email address.';
+    }
+    return errorMessage;
+    // Dispatch an action or set a state variable to show the user-friendly error message
   } finally {
     dispatch(setLoading(false));
   }
 };
 
 export const login = (email, password) => async (dispatch) => {
-  dispatch(setLoading({
-    type: SET_LOADING,
-    payload: true,
-  }));
-  try { 
-    console.log(password,email)
+  dispatch(setLoading({ type: SET_LOADING, payload: true }));
+
+  try {
+    console.log('Login: Before attempting login', email);
+
     const userCredential = await signInWithEmailAndPassword(
       FIREBASE_AUTH,
       email,
       password
     );
+
+    console.log('Login: User successfully logged in', email);
+
     dispatch(
-      setUserData(
-        { 
-            uid: userCredential.user.uid,
-            email: userCredential.user.email,
-            emailVerified: userCredential.user.emailVerified,
-          
-        }
-        
-        )
+      setUserData({
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        emailVerified: userCredential.user.emailVerified,
+
+      })
     );
 
-  //  dispatch(checkUserProfileCompletion());
+    dispatch(checkUserProfileCompletion());
+    // Dispatch any additional actions or operations here
   } catch (error) {
-    console.error(error); 
+    console.error('Login Error:', error);
+
+    let errorMessage = 'An error occurred while logging in. Please try again later.';
+
+    if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Please provide a valid email address.';
+    } else if (error.code === 'auth/user-disabled') {
+      errorMessage = 'This account has been disabled. Please contact support for assistance.';
+    } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+      errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+    }
+    return errorMessage;
+    // Dispatch an action or set a state variable to show the user-friendly error message
   } finally {
     dispatch(setLoading(false));
   }
 };
 
+
+
 export const logout = () => async (dispatch) => {
-  const FIREBASE_AUTH = getAuth();
   dispatch(setLoading(true));
+
   try {
-    await FIREBASE_AUTH.signOut();
-    dispatch(setUser(null));
+    console.log('Logout: Before logging out');
+
+    await (FIREBASE_AUTH.signOut());
+
+    console.log('Logout: User successfully logged out');
+
+    dispatch(setUserData(null)); // Clear user data after logout
+
+    // Dispatch any additional actions or operations here
   } catch (error) {
-    dispatch(setError(error));
+    console.error('Logout Error:', error);
+
+    let errorMessage = 'An error occurred while logging out. Please try again later.';
+    // You can customize error messages based on your needs
+    return errorMessage;
+    // Dispatch an action or set a state variable to show the user-friendly error message
+    dispatch(setError(errorMessage));
   } finally {
     dispatch(setLoading(false));
   }
 };
+
 
 export const sendVerificationEmail = () => async (dispatch) => {
   dispatch(setLoading(true));
+
   try {
-    const FIREBASE_AUTH = getAuth();
+    console.log('Sending Verification Email: Before sending email');
+
     const actionCodeSettings = {
-      url: process.env.NEXT_PUBLIC_URLROOT,
       handleCodeInApp: true,
     };
 
-    await sendEmailVerification(FIREBASE_AUTH.currentUser, actionCodeSettings);
+    await sendEmailVerification(FIREBASE_AUTH.currentUser);
+
+    console.log('Sending Verification Email: Email verification sent successfully');
   } catch (error) {
-    dispatch(setError(error));
+    console.error('Sending Verification Email Error:', error);
+
+    let errorMessage = 'An error occurred while sending the verification email. Please try again later.';
+    // You can customize error messages based on your needs
+    return errorMessage;
   } finally {
     dispatch(setLoading(false));
   }
 };
 
-export const checkUserProfileCompletion = () => async (dispatch) => {
+
+export const checkUserProfileCompletion = () => async (dispatch, getState) => {
   dispatch(setLoading(true));
 
   try {
-    const db_ = db; 
-    const uid = getAuth().currentUser.uid;
-    const userRef = doc(db_, "users", uid);
+    console.log('Checking User Profile Completion');
+
+    const uid = FIREBASE_AUTH.currentUser.uid;
+    const userRef = doc(FIREBASE_DB, 'users', uid);
 
     const userDoc = await getDoc(userRef);
 
     if (userDoc.exists()) {
       const { profileCompleted } = userDoc.data();
-      dispatch(setProfileCompleted(profileCompleted));
+      const { userData } = getState().user; // Get current user data from Redux
+
+      dispatch(
+        setUserData({
+          ...userData,
+          profileCompleted,
+        })
+      );
     } else {
-      //console.log("User document does not exist");
-      dispatch(setProfileCompleted(false));
+      const { userData } = getState().user; // Get current user data from Redux
+
+      dispatch(
+        setUserData({
+          ...userData,
+          profileCompleted: false,
+        })
+      );
     }
+
+    console.log('User Profile Completion Checked');
   } catch (error) {
-    dispatch(setError(error));
+    console.error('User Profile Completion Error:', error);
+    // Handle error or dispatch an error action if needed
   } finally {
     dispatch(setLoading(false));
   }
 };
+
 
 
 export const uploadFormToFirebase = (
@@ -189,24 +265,25 @@ export const uploadFormToFirebase = (
   editMode = false
 ) => async (dispatch) => {
   dispatch(setLoading(true));
+
   try {
-    // Create a reference to Firebase Storage
+    console.log('Uploading Form to Firebase');
+
     const storage = getStorage();
-    const storageRef = ref(storage, "pictures");
+    const storageRef = ref(storage, 'pictures');
     pictures = [...pictures];
 
-    // Create a reference for each picture uploaded
     const pictureRefs = await Promise.all(
       pictures.map((picture) => {
-        if (typeof picture === "string" || picture instanceof String) {
-          // Picture is already uploaded, return the URL directly
+        if (typeof picture === 'string' || picture instanceof String) {
           return picture;
         } else {
-          // Picture is being uploaded, upload it to Firebase Storage
           const fileRef = ref(
             storage,
             `pictures/${Date.now()}-${picture.name}`
           );
+
+          // Start uploading the picture and get the download URL
           return uploadBytesResumable(fileRef, picture).then((snapshot) =>
             getDownloadURL(snapshot.ref)
           );
@@ -214,13 +291,11 @@ export const uploadFormToFirebase = (
       })
     );
 
-    // Create a reference to Firebase Firestore
     const db_ = db;
     const currentUser = getAuth().currentUser;
 
     if (editMode) {
-      // Update the existing user document in Firestore
-      const userRef = doc(db_, "users", currentUser.uid);
+      const userRef = doc(db_, 'users', currentUser.uid);
       await updateDoc(userRef, {
         gender,
         orientation,
@@ -237,8 +312,7 @@ export const uploadFormToFirebase = (
         },
       });
     } else {
-      // Create a new user document in Firestore
-      await setDoc(doc(db_, "users", currentUser.uid), {
+      await setDoc(doc(db_, 'users', currentUser.uid), {
         email: currentUser.email,
         gender,
         orientation,
@@ -259,8 +333,14 @@ export const uploadFormToFirebase = (
     }
 
     dispatch(checkUserProfileCompletion());
+
+    console.log('Form Uploaded Successfully');
   } catch (error) {
-    dispatch(setError(error));
+    console.error('Form Upload Error:', error);
+
+    let errorMessage = 'An error occurred while uploading the form. Please try again later.';
+    // Customize error messages based on your needs
+    return errorMessage;
   } finally {
     dispatch(setLoading(false));
   }
@@ -376,16 +456,33 @@ export const googleSignIn = () => async (dispatch) => {
   }
 };
 
+
 export async function getUser(uid) {
-  const q = query(collection(db, "users"), where("__name__", "==", uid));
-  const querySnapshot = await getDocs(q);
+  try {
+    console.log(`Getting user data for UID: ${uid}`);
 
-  if (querySnapshot.empty) {
+    const q = query(collection(db, 'users'), where('__name__', '==', uid));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log(`User data not found for UID: ${uid}`);
+      return null;
+    }
+
+    const doc = querySnapshot.docs[0];
+    const user = { id: doc.id, ...doc.data() };
+
+    console.log(`User data fetched successfully for UID: ${uid}`);
+    return user;
+  } catch (error) {
+    console.error(`Error fetching user data for UID ${uid}:`, error);
+
+    let errorMessage = 'An error occurred while fetching user data. Please try again later.';
+    // Customize error messages based on your needs
+    return errorMessage;
+
     return null;
+  } finally {
+    dispatch(setLoading(false));
   }
-
-  const doc = querySnapshot.docs[0];
-  const user = { id: doc.id, ...doc.data() };
-
-  return user;
 }

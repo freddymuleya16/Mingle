@@ -13,16 +13,16 @@ export default function RegisterScreen({ navigation }) {
   const dispatch = useDispatch();
   const [errors, setErrors] = useState({});
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const errors = {};
-
+  
     // Check for email
     if (!email) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       errors.email = "Email is invalid";
     }
-
+  
     // Check for password
     if (!password) {
       errors.password = "Password is required";
@@ -30,28 +30,42 @@ export default function RegisterScreen({ navigation }) {
       errors.password =
         "Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long";
     }
-
+  
     // Check for confirm password
     if (!confirmPassword) {
       errors.confirmPassword = "Confirm password is required";
     } else if (password !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
-
+  
     if (Object.keys(errors).length !== 0) {
-      setErrors(errors)
+      setErrors(errors);
       return;
     }
-    dispatch(signup(email, password)).then((data)=>{
-      if(data?.error){
-        Alert.alert('FAILURE','Ooops - '+data.error?.message,'Oh',{cancelable:false,})
-      
-      }else{
-        Alert.alert('SUCCESS','You have successfully created a Mingle Account','Lets Mingle',{cancelable:false,})
+  
+    try {
+      console.log('Handling Signup: Creating an account');
+  
+      const data = await dispatch(signup(email, password));
+  
+      if (data?.error) {
+        console.error('Signup Error:', data.error);
+        Alert.alert('Failure', 'Oops - ' + data.error.message, 'Oh', { cancelable: false });
+      } else {
+        console.log('Handling Signup: Account created successfully');
+        Alert.alert('Success', 'You have successfully created a Mingle Account',  [{ text: 'OK', onPress: () => {} }], { cancelable: false });
       }
-    });
-
+    } catch (error) {
+      console.error('Handling Signup Error:', error);
+  
+      let errorMessage = 'An error occurred while creating an account. Please try again later.';
+      // Customize error messages based on your needs
+  
+      // Show an error alert to the user
+      Alert.alert('Error', errorMessage, [{ text: 'OK', onPress: () => { } }]);
+    }
   };
+  
 
   return (
     <BackgroundImage>

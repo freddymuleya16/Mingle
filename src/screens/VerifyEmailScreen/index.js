@@ -24,29 +24,42 @@ export default function VerifyEmailScreen() {
     function handleSendVerification() {
         dispatch(sendVerificationEmail());
     }
-
-
     useEffect(() => {
         const intervalId = setInterval(async () => {
+          try {
+            console.log('Verifying Email: Checking email verification status');
+      
             const user = FIREBASE_AUTH.currentUser;
+      
             if (user) {
-                await user.reload();
-                if (user.emailVerified) {
-                    reduxUser.emailVerified = true
-                    clearInterval(intervalId);
-                    dispatch(setUserData(reduxUser));
-                } else {
-                    setTries((prevTries) => prevTries + 1);
-                    if (tries >= MAX_TRIES) {
-                        FIREBASE_AUTH.signOut();
-                    }
+              await user.reload();
+      
+              if (user.emailVerified) {
+                console.log('Verifying Email: Email verified successfully');
+                reduxUser.emailVerified = true;
+                clearInterval(intervalId);
+                dispatch(setUserData({...reduxUser}));
+              } else {
+                console.log('Verifying Email: Email verification in progress');
+      
+                setTries((prevTries) => prevTries + 1);
+      
+                if (tries >= MAX_TRIES) {
+                  console.log('Verifying Email: Max verification attempts reached, signing out');
+                  await FIREBASE_AUTH.signOut();
                 }
+              }
             }
+          } catch (error) {
+            console.error('Verifying Email Error:', error);
+      
+            // Handle error or dispatch an error action if needed
+          }
         }, VERIFY_INTERVAL);
-
+      
         return () => clearInterval(intervalId);
-    }, [dispatch, reduxUser, tries]);
-
+      }, [dispatch, reduxUser, tries]);
+      
     return (
         <BackgroundImage>
             <Container>
