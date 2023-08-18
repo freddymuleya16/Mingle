@@ -40,8 +40,7 @@ const ProfileScreen = () => {
 
   const dispatch = useDispatch();   
 
-  const handleSignout = (e) => {
-    e.preventDefault();
+  const handleSignout = () => {
     dispatch(logout());
   };
 
