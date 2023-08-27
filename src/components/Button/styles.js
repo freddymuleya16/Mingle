@@ -8,7 +8,7 @@ export const ButtonContainer = styled.View`
   text-align: right;
 `;
 export const Container = styled(RectButton).attrs({
-  style:{borderRadius:15,borderTopRightRadius:5}
+  style:{borderRadius:15,borderTopRightRadius:15}
 })`
   height: 46px;
   background-color: ${config.primaryColor};  

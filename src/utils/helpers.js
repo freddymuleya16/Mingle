@@ -3,7 +3,14 @@
 
 import { Linking } from "react-native";
 
-export const getUserLocation = () => {}
+export const getUserLocation =async () => {
+  return {
+    latitude:
+      -23.8850806,
+    longitude:
+      29.7311898
+  }
+}
 // export const getUserLocation = () => {
 //     Geolocation.getCurrentPosition(
 //       position => {
@@ -17,11 +24,10 @@ export const getUserLocation = () => {}
 //   };
 
 export const openWebsite = async (url) => {
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URL: ${url}`);
-    }
-  };
-  
+  const supported = await Linking.canOpenURL(url);
+  if (supported) {
+    await Linking.openURL(url);
+  } else {
+    console.log(`Don't know how to open URL: ${url}`);
+  }
+};

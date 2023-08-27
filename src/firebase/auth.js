@@ -291,8 +291,8 @@ export const uploadFormToFirebase = (
       })
     );
 
-    const db_ = db;
-    const currentUser = getAuth().currentUser;
+    const db_ = FIREBASE_DB;
+    const currentUser = FIREBASE_AUTH.currentUser;
 
     if (editMode) {
       const userRef = doc(db_, 'users', currentUser.uid);
@@ -349,8 +349,7 @@ export const uploadFormToFirebase = (
 
 export const facebookSignIn = () => async (dispatch) => {
   dispatch(setLoading(true));
-  try {
-    const FIREBASE_AUTH = getAuth();
+  try { 
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(FIREBASE_AUTH, provider);
 

@@ -1,8 +1,10 @@
-import {  SafeAreaView,ScrollView ,KeyboardAvoidingView} from 'react-native';
+import { SafeAreaView, ScrollView, KeyboardAvoidingView } from 'react-native';
 import styled from 'styled-components/native';
 import TextInput from '../../components/Input';
-import Butto from '../../components/Button'; 
- 
+import Butto from '../../components/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { RadioButton } from 'react-native-paper';
+
 
 
 
@@ -22,7 +24,7 @@ export const StyledScrollView = styled(ScrollView)`
 export const Content = styled.View`
   flex: 1;
 `;
- 
+
 
 export const Title = styled.Text`
   font-size: 34px;
@@ -55,13 +57,24 @@ export const RadioRow = styled.View`
 flex-direction: row;
 `
 
-export const RadioInput = styled.View`
-  width: 20px;
-  height: 20px;
+export const RadioInput = styled.View` 
+  background-color: ${props => (props.checked ? "#000" : "transparent")};
+  width: 12px;
+  height: 12px;
   border-radius: 10px;
-  border-width: 1px;
+`;
+
+export const RadioBoarder = styled.TouchableOpacity`
+  width: 20px;
+  height: 20px; 
+  padding: 0; 
+  overflow: hidden;
+  border-radius: 10px;
+  border-width: 2px;
   border-color: #000;
   margin-right: 8px;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const RadioLabel = styled.Text`
@@ -97,6 +110,7 @@ export const TextArea = styled(TextInput)`
 
 export const Button = styled(Butto)`
   margin-top: 20px;
+  border-radius: 16px;
 `;
 
 export const ButtonText = styled.Text`
@@ -117,4 +131,17 @@ export const Divider = styled.View`
   height: 1px;
   background-color: #ccc;
   margin: 10px 0px;
+`
+
+export const ImageContainer = styled.View`
+  border-radius: 10px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+`
+
+export const Icon = styled.TouchableOpacity`
+  margin-bottom: -35px;
+  margin-right: 5px;
+  z-index: 10;
+  align-self: flex-end; 
 `
