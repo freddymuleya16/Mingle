@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text, View } from 'react-native';
 import styled from 'styled-components/native';
 
 const Container = styled.View`
@@ -8,17 +9,17 @@ const Container = styled.View`
   flex-direction: row;
 `;
 
-const Sidebar = styled.View`
-  display: none;
-  @media (min-width: 640px) {
-    display: flex;
-    flex-basis: 25%;
-    background: linear-gradient(to right, #ff007f, #ff5c83);
-    padding: 24px;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-`;
+// // const Sidebar = styled.View`
+// //   display: none;
+// //   @media (min-width: 640px) {
+// //     display: flex;
+// //     flex-basis: 25%;
+// //     background: linear-gradient(to right, #ff007f, #ff5c83);
+// //     padding: 24px;
+// //     flex-direction: column;
+// //     justify-content: space-between;
+// //   }
+// // `;
 
 const ProfileHeader = styled.View`
   display: flex;
@@ -58,17 +59,17 @@ const MenuButtons = styled.View`
   flex-direction: column;
 `;
 
-const MenuButton = styled.TouchableOpacity`
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-  &:hover {
-    font-size: 24px;
-  }
-`;
+// const MenuButton = styled.TouchableOpacity`
+//   display: flex;
+//   align-items: center;
+//   padding: 12px;
+//   color: #fff;
+//   font-size: 20px;
+//   cursor: pointer;
+//   &:hover {
+//     font-size: 24px;
+//   }
+// `;
 
 const MainContent = styled.ScrollView`
   flex: 1;
@@ -80,8 +81,7 @@ const ChatItem = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 12px;
-  cursor: pointer;
+  padding: 12px; 
 `;
 
 const ChatImage = styled.Image`
@@ -128,10 +128,10 @@ const MessageAudio = styled.View`
   padding: 8px;
 `;
 
-const AudioPlayer = styled.Audio`
-  width: 100%;
-  outline: none;
-`;
+// const AudioPlayer = styled.Audio`
+//   width: 100%;
+//   outline: none;
+// `;
 
 const HeartButton = styled.TouchableOpacity`
   display: flex;
@@ -151,9 +151,10 @@ const HeartIcon = styled.Image`
 `;
 
 const ChatScreen = () => {
+     
   return (
     <Container>
-      <Sidebar>
+      < >
         <ProfileHeader>
           <ProfileImage
             source={{
@@ -168,7 +169,7 @@ const ChatScreen = () => {
         </ProfileHeader>
         <MenuButtons>
           <MenuButton>
-            <svg
+            {/* <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
@@ -177,12 +178,11 @@ const ChatScreen = () => {
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 576 512"
-            >
-              {/* Your SVG content here */}
-            </svg>
+            > 
+            </svg> */}
           </MenuButton>
           <MenuButton>
-            <svg
+            {/* <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
@@ -191,12 +191,11 @@ const ChatScreen = () => {
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 576 512"
-            >
-              {/* Your SVG content here */}
-            </svg>
+            > 
+            </svg> */}
           </MenuButton>
           <MenuButton>
-            <svg
+            {/* <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
@@ -205,12 +204,11 @@ const ChatScreen = () => {
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
-            >
-              {/* Your SVG content here */}
-            </svg>
+            > 
+            </svg> */}
           </MenuButton>
           <MenuButton>
-            <svg
+            {/* <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
@@ -219,12 +217,11 @@ const ChatScreen = () => {
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 640 512"
-            >
-              {/* Your SVG content here */}
-            </svg>
+            > 
+            </svg> */}
           </MenuButton>
           <MenuButton>
-            <svg
+            {/* <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
@@ -233,12 +230,11 @@ const ChatScreen = () => {
               role="img"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 192 512"
-            >
-              {/* Your SVG content here */}
-            </svg>
+            > 
+            </svg> */}
           </MenuButton>
         </MenuButtons>
-      </Sidebar>
+      </ >
       <MainContent>
         <ChatItem>
           <ChatImage
@@ -267,11 +263,11 @@ const ChatScreen = () => {
         <MessageContainer>
           <MessageAudio>
             <AudioPlayer controls>
-              <source
+              {/* <source
                 src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
                 type="audio/mpeg"
               />
-              Your browser does not support the audio element.
+              Your browser does not support the audio element. */}
             </AudioPlayer>
           </MessageAudio>
         </MessageContainer>

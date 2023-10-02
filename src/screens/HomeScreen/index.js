@@ -21,9 +21,9 @@ const StyledText = styled.Text`
   font-weight: bold;
 `;
 
-const MatchesScreen = () => {
+const MatchesScreen = ({navigation}) => {
   const user = useSelector((state) => state.user.userData);
-  const [matches, setMatches] = useState([])
+  const [matches, setMatches] = useState([]) 
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -60,7 +60,7 @@ const MatchesScreen = () => {
       numColumns={2}
       data={matches}
       renderItem={ ({item}) => (
-          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }}/> 
+          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={()=>{navigation.push('ChatScreen')}}/> 
       )}
       />
      </StyledContainer>

@@ -30,14 +30,14 @@ const AppNavigator = () => {
 
   const isEmailVerified = user && user.emailVerified; // Replace with your user data structure
   const isProfileCompleted = user && user.profileCompleted; // Replace with your user data structure
- console.log(user)
+ 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
           <>
             {isEmailVerified && isProfileCompleted ? (
-              <Stack.Screen name="Home" component={HomeNavigator} />
+              <Stack.Screen name="Home1" component={HomeNavigator} />
             ) : isEmailVerified?(
               <Stack.Screen name="Profile" component={ProfileScreen} />
             ):

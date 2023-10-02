@@ -47,8 +47,7 @@ const MatchesScreen = () => {
                 id: doc.id,
                 ...doc.data(),
             })).filter((potentialMatch) => {
-
-                return true;
+ 
                 // Check if the potential match has a location
                 if (!potentialMatch.location) {
                     console.log(potentialMatch.firstName, " No Location")
@@ -197,6 +196,11 @@ const MatchesScreen = () => {
       }
     
     return (
+        <GradientContainer
+        colors={['#319795', '#4fd1c5']} // Add your gradient colors here
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+    >
         <Container>
             <CarouselContainer>
                 <Carousel images={images} />
@@ -227,6 +231,8 @@ const MatchesScreen = () => {
                 </ >
             </ActionsContainer>
         </Container>
+    </GradientContainer>
+        
     );
 };
 
@@ -335,4 +341,7 @@ const NoMatchesText = styled.Text`
   font-weight: bold;
   color: #c1c1c1;
   margin-top: 10px;
+`;
+const GradientContainer = styled(LinearGradient)`
+ flex:1
 `;
