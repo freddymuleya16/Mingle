@@ -3,21 +3,35 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import HomeScreen from '../screens/HomeScreen';
+import Header from '../components/Header';
+import MatchesScreen from '../screens/MatchesScreen';
+import NotificationsScreen from '../screens/NotificationScreen';
+import withAuth from '../utils/withAuth';
+import { createStackNavigator } from '@react-navigation/stack';
+import ChatScreen from '../screens/ChatScreen';
 // import MatchesScreen from '../screens/MatchesScreen';
 // import NotificationsScreen from '../screens/NotificationsScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
-
+ 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
+
+const MatchesStack = () => {
+  (<Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Screen name="MatchesScreen" component={HomeScreen} /> 
+</Stack.Navigator>)
+}
 
 const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        tabBarActiveTintColor:'#4fd1c5',
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'Home1') {
             iconName = 'home';
           } else if (route.name === 'Matches') {
             iconName = 'heart';
@@ -31,15 +45,21 @@ const TabNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Matches" component={HomeScreen} />
-      <Tab.Screen name="Notifications" component={HomeScreen} />
+      <Tab.Screen name="Home1" component={MatchesStack} options={{header:()=>{
+        return <Header/>
+      }}}/>
+      <Tab.Screen name="Matches" component={MatchesScreen}  options={{headerShown:false}}/>
+      <Tab.Screen name="Notifications" component={NotificationsScreen}  options={{header:()=>{
+        return <Header/>
+      }}}/>
       <Tab.Screen name="Settings" component={HomeScreen} />
     </Tab.Navigator>
   );
 };
 
 const HomeNavigator = () => {
+
+  return <TabNavigator/>
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Main" component={TabNavigator} />
@@ -48,4 +68,4 @@ const HomeNavigator = () => {
   );
 };
 
-export default HomeNavigator;
+export default withAuth(HomeNavigator);

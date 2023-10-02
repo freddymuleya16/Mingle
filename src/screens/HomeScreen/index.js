@@ -1,14 +1,92 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import styled from 'styled-components/native';
+import Matcher from '../../components/Matcher';
+import { useSelector } from 'react-redux';
+import { Dimensions, FlatList, View } from 'react-native'; 
+import { useState } from 'react';
+import { doc, onSnapshot, query } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase.config';
+import { getUsers } from '../../firebase/auth';
+
+const Tab = createMaterialTopTabNavigator();
+const StyledContainer = styled.View`
+  flex: 1; 
+  padding: 10px;
+`;
+
+const StyledText = styled.Text`
+  font-size: 24px;
+  font-weight: bold;
+`;
+
+const MatchesScreen = () => {
+  const user = useSelector((state) => state.user.userData);
+  const [matches, setMatches] = useState([])
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+        query(
+            doc(FIREBASE_DB, `users`, FIREBASE_AUTH.currentUser.uid),
+        ),
+        (querySnapshot) => {
+            const data = querySnapshot.data();
+            getUsers(data.matches?.map((match) => {
+                if (match.matchId) {
+                    return match.matchId
+                } else if (match.userId) {
+                    return match.userId
+                } else {
+                    return match
+                }
+            })).then((users) => {
+
+                const usersWitchMatchdate = users.map(obj1 => {
+                    const match = data.matches.find(obj2 => obj1.id === obj2.matchId);
+                    return { ...obj1, ...match };
+                });
+
+                setMatches([...usersWitchMatchdate])
+            })
+        }
+    );
+    return () => unsubscribe();
+}, []) 
+  return (
+    <StyledContainer>
+      <FlatList 
+      contentContainerStyle={{}}
+      numColumns={2}
+      data={matches}
+      renderItem={ ({item}) => (
+          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }}/> 
+      )}
+      />
+     </StyledContainer>
+  );
+};
+
+const MessagesScreen = () => {
+  return (
+    <StyledContainer>
+      <StyledText>Messages</StyledText>
+    </StyledContainer>
+  );
+};
 
 const HomeScreen = () => {
-  return (
-    <View>
-      <Text>HomeScreen</Text>
-    </View>
-  )
-}
+  return ( 
+      <Tab.Navigator  
+      screenOptions={{
+        tabBarIndicatorStyle:{
+          backgroundColor: '#4fd1c5', 
+        }
+      }} >
+        <Tab.Screen name="Matches" component={MatchesScreen} />
+        <Tab.Screen name="Messages" component={MessagesScreen} />
+      </Tab.Navigator> 
+  );
+};
 
-export default HomeScreen
-
-const styles = StyleSheet.create({})
+export default HomeScreen;

@@ -1,18 +1,20 @@
-import React from 'react';
-import { Provider } from 'react-redux';
+import React, { useEffect } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './redux/store/configureStore';
 import AppNavigator from './Navigation/AppNavigator'; 
-import Loading from './components/Loading';
+import Loading from './components/Loading'; 
+import { getUserData } from './redux/actions/userActions';
 
 const AppRoot = () => {
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user.userData);
+ 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Loading />
-        <AppNavigator />
-      </PersistGate>
-    </Provider>
+    <><Loading />
+        <AppNavigator /> 
+    </>
+     
   );
 };
 

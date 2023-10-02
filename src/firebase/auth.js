@@ -31,6 +31,7 @@ import {
   where,
   getDocs,
   updateDoc,
+  documentId,
 } from "firebase/firestore";
 import { SET_LOADING, SET_USER_DATA, setLoading, setUserData } from "../redux/actions/userActions";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebase.config";
@@ -123,13 +124,13 @@ export const login = (email, password) => async (dispatch) => {
     );
 
     console.log('Login: User successfully logged in', email);
-
+    const userData = await getUser(userCredential.user.uid)
     dispatch(
       setUserData({
         uid: userCredential.user.uid,
         email: userCredential.user.email,
         emailVerified: userCredential.user.emailVerified,
-
+        ...userData
       })
     );
 
@@ -349,7 +350,7 @@ export const uploadFormToFirebase = (
 
 export const facebookSignIn = () => async (dispatch) => {
   dispatch(setLoading(true));
-  try { 
+  try {
     const provider = new FacebookAuthProvider();
     const result = await signInWithPopup(FIREBASE_AUTH, provider);
 
@@ -460,7 +461,7 @@ export async function getUser(uid) {
   try {
     console.log(`Getting user data for UID: ${uid}`);
 
-    const q = query(collection(db, 'users'), where('__name__', '==', uid));
+    const q = query(collection(FIREBASE_DB, 'users'), where('__name__', '==', uid));
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
@@ -481,7 +482,22 @@ export async function getUser(uid) {
     return errorMessage;
 
     return null;
-  } finally {
-    dispatch(setLoading(false));
+  }  
+}
+
+export async function getUsers(userIds) {
+  const userDocs = [];
+
+  if (userIds && userIds.length > 0) {
+      const q = query(
+          collection(FIREBASE_DB, "users"),
+          where(documentId(), "in", userIds)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+          userDocs.push({ ...doc.data(), id: doc.id });
+      });
   }
+
+  return userDocs;
 }
