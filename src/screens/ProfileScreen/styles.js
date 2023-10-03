@@ -27,6 +27,7 @@ export const Content = styled.View`
 
 
 export const Title = styled.Text`
+  font-family: 'kalam';  
   font-size: 34px;
   text-align: center;
   margin: 16px 0;
@@ -39,7 +40,7 @@ export const Form = styled(ScrollView)`
 `;
 
 export const Label = styled.Text`
-  font-size: 18px;
+font-family: 'kalam';  font-size: 18px;
   color: black;
   font-weight: bold;
   margin-bottom: 4px;
@@ -78,7 +79,7 @@ export const RadioBoarder = styled.TouchableOpacity`
 `;
 
 export const RadioLabel = styled.Text`
-  font-size: 16px;
+font-family: 'kalam';  font-size: 16px;
 `;
 
 export const Input = styled(TextInput)` 
@@ -114,7 +115,7 @@ export const Button = styled(Butto)`
 `;
 
 export const ButtonText = styled.Text`
-  color: white; 
+font-family: 'kalam';  color: white; 
 `;
 
 export const SignOutLink = styled.TouchableOpacity`
@@ -123,7 +124,7 @@ export const SignOutLink = styled.TouchableOpacity`
 `;
 
 export const SignOutText = styled.Text`
-  color: #007bff;
+font-family: 'kalam';  color: #007bff;
   font-size: 16px;
 `;
 

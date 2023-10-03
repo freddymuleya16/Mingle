@@ -41,9 +41,9 @@ const CenterContent = styled.View`
 `;
 
 const NameText = styled.Text`
+  font-family: 'kalam';  
   color: white; 
   font-size: 18px;
-  overflow-wrap: break-word;
 `;
 
 function Matcher({ data, onClick }) {

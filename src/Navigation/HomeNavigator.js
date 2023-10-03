@@ -10,6 +10,7 @@ import withAuth from '../utils/withAuth';
 import { createStackNavigator } from '@react-navigation/stack';
 import ChatScreen from '../screens/ChatScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import ChatHeader from '../components/ChatHeader';
 // import MatchesScreen from '../screens/MatchesScreen';
 // import NotificationsScreen from '../screens/NotificationsScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
@@ -19,16 +20,26 @@ const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
 const MatchesStack = () =>
-(<Stack.Navigator screenOptions={{ headerShown: false }}>
-  <Stack.Screen name="MatchesScreen" component={HomeScreen} />
-  <Stack.Screen name="ChatScreen" component={ChatScreen} />
+(<Stack.Navigator  >
+  <Stack.Screen name="MatchesScreen" component={HomeScreen} options={{
+        header: () => {
+          return <Header />
+        }
+      }} />
+  <Stack.Screen name="ChatScreen" component={ChatScreen} options={{
+        header: () => {
+          return <ChatHeader />
+        }
+      }}  />
 </Stack.Navigator>)
 
 //0710716579
 const TabNavigator = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
+    <Tab.Navigator 
+      screenOptions={
+        ({ route }) => ({
+          tabBarLabelStyle: { fontFamily: 'kalam' },
         tabBarActiveTintColor: '#4fd1c5',
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -48,9 +59,7 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={MatchesStack} options={{
-        header: () => {
-          return <Header />
-        }
+        headerShown:false
       }} />
       <Tab.Screen name="Matches" component={MatchesScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{

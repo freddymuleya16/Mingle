@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import styled from 'styled-components/native';
 import Matcher from '../../components/Matcher';
 import { useSelector } from 'react-redux';
-import { Dimensions, FlatList, View } from 'react-native'; 
+import { Dimensions, FlatList, View } from 'react-native';
 import { useState } from 'react';
 import { doc, onSnapshot, query } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase.config';
@@ -17,53 +17,57 @@ const StyledContainer = styled.View`
 `;
 
 const StyledText = styled.Text`
+  font-family: 'kalam';  
   font-size: 24px;
   font-weight: bold;
 `;
 
-const MatchesScreen = ({navigation}) => {
+const MatchesScreen = ({ navigation }) => {
   const user = useSelector((state) => state.user.userData);
-  const [matches, setMatches] = useState([]) 
+  const [matches, setMatches] = useState([])
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
+    if (FIREBASE_AUTH.currentUser) {
+      const unsubscribe = onSnapshot(
         query(
-            doc(FIREBASE_DB, `users`, FIREBASE_AUTH.currentUser.uid),
+          doc(FIREBASE_DB, `users`, FIREBASE_AUTH.currentUser.uid),
         ),
         (querySnapshot) => {
-            const data = querySnapshot.data();
-            getUsers(data.matches?.map((match) => {
-                if (match.matchId) {
-                    return match.matchId
-                } else if (match.userId) {
-                    return match.userId
-                } else {
-                    return match
-                }
-            })).then((users) => {
+          const data = querySnapshot.data();
+          getUsers(data.matches?.map((match) => {
+            if (match.matchId) {
+              return match.matchId
+            } else if (match.userId) {
+              return match.userId
+            } else {
+              return match
+            }
+          })).then((users) => {
 
-                const usersWitchMatchdate = users.map(obj1 => {
-                    const match = data.matches.find(obj2 => obj1.id === obj2.matchId);
-                    return { ...obj1, ...match };
-                });
+            const usersWitchMatchdate = users.map(obj1 => {
+              const match = data.matches.find(obj2 => obj1.id === obj2.matchId);
+              return { ...obj1, ...match };
+            });
 
-                setMatches([...usersWitchMatchdate])
-            })
+            setMatches([...usersWitchMatchdate])
+          })
         }
-    );
-    return () => unsubscribe();
-}, []) 
+      );
+      return () => unsubscribe();
+    }
+
+  }, [])
   return (
     <StyledContainer>
-      <FlatList 
-      contentContainerStyle={{}}
-      numColumns={2}
-      data={matches}
-      renderItem={ ({item}) => (
-          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={()=>{navigation.push('ChatScreen')}}/> 
-      )}
+      <FlatList
+        contentContainerStyle={{}}
+        numColumns={2}
+        data={matches}
+        renderItem={({ item }) => (
+          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={() => { navigation.push('ChatScreen') }} />
+        )}
       />
-     </StyledContainer>
+    </StyledContainer>
   );
 };
 
@@ -76,16 +80,16 @@ const MessagesScreen = () => {
 };
 
 const HomeScreen = () => {
-  return ( 
-      <Tab.Navigator  
+  return (
+    <Tab.Navigator
       screenOptions={{
-        tabBarIndicatorStyle:{
-          backgroundColor: '#4fd1c5', 
+        tabBarIndicatorStyle: {
+          backgroundColor: '#4fd1c5',
         }
       }} >
-        <Tab.Screen name="Matches" component={MatchesScreen} />
-        <Tab.Screen name="Messages" component={MessagesScreen} />
-      </Tab.Navigator> 
+      <Tab.Screen name="Matches" options={{ tabBarLabelStyle: { fontFamily: 'kalam' } }} component={MatchesScreen} />
+      <Tab.Screen name="Messages"  options={{ tabBarLabelStyle: { fontFamily: 'kalam' } }}  component={MessagesScreen} />
+    </Tab.Navigator>
   );
 };
 

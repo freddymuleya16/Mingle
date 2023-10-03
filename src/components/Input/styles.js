@@ -20,6 +20,7 @@ export const TInput = styled.TextInput.attrs({
 `;
 
 export const ErrorText = styled.Text`
+font-family: 'kalam';
 color:red;
 font-size:12px;
 margin-top:-10px;

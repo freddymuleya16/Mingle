@@ -3,6 +3,7 @@ import config from '../../../default.config.json'
 
 
 export const Label = styled.Text`
+  font-family: 'kalam';  
   font-size: 16px;
   color: black;
   font-weight: 200;
@@ -39,7 +40,7 @@ export const FormContainer = styled(KeyboardAvoidingView).attrs({
 `;
 
 export const HeaderText = styled.Text`
-  font-size: 30px;
+font-family: 'kalam';  font-size: 30px;
   margin-bottom: 12px;
   font-weight: bold;
   font-variant: small-caps;
@@ -59,12 +60,12 @@ export const HeaderText = styled.Text`
 
 
 export const ButtonText = styled.Text`
-  color: white;
+font-family: 'kalam';  color: white;
   font-weight: bold;
 `;
 
 export const LinkText = styled.Text`
-  color: ${config.secondaryColor};  
+font-family: 'kalam';  color: ${config.secondaryColor};  
   text-align: right;
   margin-top: 0px;
   margin-bottom: 10px;

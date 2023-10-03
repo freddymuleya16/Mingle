@@ -32,7 +32,7 @@ const MatchesScreen = () => {
     useEffect(() => {
         setImages([...potentialMatches[0]?.pictures ?? []])
         setActiveIndex(0)
-        console.log("Current match", potentialMatches[0])
+        console.log("Current match", potentialMatches[0]?.firstName)
         if (potentialMatches.length == 0) {
             setNoMatches(true);
         }
@@ -258,7 +258,8 @@ const ActionsContainer = styled(LinearGradient).attrs({
     `;
 
 const MatchText = styled.Text`
-      color: #fff;
+    font-family: 'kalam';      
+    color: #fff;
     `;
 
 const IconContainer = styled.View`
@@ -286,12 +287,14 @@ padding: 30px 15px;
 `;
 
 const MatchName = styled.Text`
+font-family: 'kalam';
 font-size: 24px;
 font-weight: bold;
 color: white;
 `;
 
 const MatchDescription = styled.Text`
+font-family: 'kalam';
 font-size: 18px;
 color: #ccc;
 margin-top: 8px;
@@ -337,7 +340,8 @@ const CenteredContent = styled.View`
 `;
 
 const NoMatchesText = styled.Text`
-  font-size: 20px;
+    font-family: 'kalam';  
+    font-size: 20px;
   font-weight: bold;
   color: #c1c1c1;
   margin-top: 10px;

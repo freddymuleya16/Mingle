@@ -2,7 +2,7 @@ import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import styled from 'styled-components/native';
 import { useSelector } from 'react-redux';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
 
 const GradientContainer = styled(LinearGradient)`
  
@@ -22,34 +22,45 @@ const ProfileImage = styled.Image`
   height: 48px;
   border-radius: 50px;
   margin-left: 10px;
+  background-color: white;
+  border: 4px;
+  border-color: white;
 `;
 
-const Username = styled.Text`
-font-family: 'kalam';  color: white;
-  font-size: 20px;
+const Username = styled.Text`  
+  color: gray;
+  font-size: 18px;
   margin-left: 10px;
 `;
 
-const App = () => {
+const ChatHeader = () => {
     const user = useSelector((state) => state.user.userData);
     //console.log(user)
     return (<GradientContainer
-        colors={['#319795', '#4fd1c5']} // Add your gradient colors here
-        start={{ x: 0, y: 0 }}
+        colors={['lightgray', 'lightgray']} // Add your gradient colors here
+        start={{ x: 0, y: 1 }}
         end={{ x: 1, y: 0 }}
     >
         <SafeArea  >
 
             <Content>
                 <ProfileImage
-                    source={ {uri:user?.pictures[0]}}
+                    source={{ uri: user?.pictures[0] }}
                     resizeMode="cover"
                 />
-                <Username>{user?.firstName} {user?.lastName}</Username>
+                <View style={{width:'90%'}}>
+                  <Username>
+                    You matched with Glen Quagmire on 2023/08/27 20:58
+                </Username>
+                <Username>
+                    Last Seen
+                </Username>   
+                </View>
+               
             </Content>
         </SafeArea>
     </GradientContainer>
     );
 };
 
-export default App;
+export default ChatHeader;

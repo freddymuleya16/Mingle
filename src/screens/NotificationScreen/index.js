@@ -108,12 +108,13 @@ const NotificationContent = styled.View`
 `;
 
 const NotificationTitle = styled.Text`
+  font-family: 'kalam';  
   font-size: 16px;
   font-weight: bold;
   color: #333; /* Set your desired text color */
 `;
 
 const NotificationMessage = styled.Text`
-  font-size: 12px;
+font-family: 'kalam';  font-size: 12px;
   color: #888; /* Set your desired text color */
 `;
