@@ -22,9 +22,7 @@ const ProfileImage = styled.Image`
   height: 48px;
   border-radius: 50px;
   margin-left: 10px;
-  background-color: white;
-  border: 4px;
-  border-color: white;
+  background-color: white; 
 `;
 
 const Username = styled.Text`  
@@ -35,7 +33,7 @@ const Username = styled.Text`
 
 const ChatHeader = () => {
     const user = useSelector((state) => state.user.userData);
-    //console.log(user)
+    
     return (<GradientContainer
         colors={['lightgray', 'lightgray']} // Add your gradient colors here
         start={{ x: 0, y: 1 }}

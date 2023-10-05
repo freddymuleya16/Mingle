@@ -71,6 +71,7 @@ font-family: 'kalam';  color: ${config.secondaryColor};
   margin-bottom: 10px;
 `;
 export const TCText = styled.Text` 
+  font-family: 'kalam';
   text-align: center;
   margin: 30px 10px 10px 10px; 
 `;

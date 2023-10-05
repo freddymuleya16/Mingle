@@ -381,7 +381,7 @@ export const facebookSignIn = () => async (dispatch) => {
           // Accounts successfully linked.
           const credential = FacebookAuthProvider.credentialFromResult(result);
           const user = result.user;
-          console.log(credential, user)
+        //  console.log(credential, user)
           // ...
         }).catch((error) => {
           console.log(error)

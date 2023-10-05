@@ -8,13 +8,13 @@ import { useFonts } from '@expo-google-fonts/kalam';
 export default function App() {
   
 
-  // let [fontsLoaded, fontError] = useFonts({
-  //   'kalam':require('./assets/Kalam/Kalam-Bold.ttf'),
-  // });
+  let [fontsLoaded, fontError] = useFonts({
+    'kalam':require('./assets/Kalam/Kalam-Bold.ttf'),
+  });
 
-  // if (!fontsLoaded && !fontError) {
-  //   return null;
-  // }
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>

@@ -32,7 +32,7 @@ font-family: 'kalam';  color: white;
 
 const App = () => {
     const user = useSelector((state) => state.user.userData);
-    //console.log(user)
+   
     return (<GradientContainer
         colors={['#319795', '#4fd1c5']} // Add your gradient colors here
         start={{ x: 0, y: 0 }}

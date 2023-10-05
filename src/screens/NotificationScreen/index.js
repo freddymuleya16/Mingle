@@ -42,7 +42,7 @@ const NotificationsScreen = () => {
     <Container>
       {notifications.length === 0 && (
         <NotificationItem  >
-          <NotificationIcon icon={faBell} size={40} read={true} />
+          <NotificationIcon icon={faBell} size={50} read={true} />
           <NotificationContent>
             <NotificationTitle>No notifications</NotificationTitle>
             <NotificationMessage>You currently have no notifications</NotificationMessage>
@@ -57,7 +57,7 @@ const NotificationsScreen = () => {
         >
           <NotificationIcon
             icon={faBell}
-            size={20}
+            size={50}
             read={notification.read}
           />
           <NotificationContent>
@@ -84,7 +84,7 @@ const NotificationTab = () => {
 
 export default NotificationTab;
 
-const Container = styled.View`
+const Container = styled.ScrollView`
   flex: 1;
   background-color: #fff; /* Set your desired background color */
   padding: 20px;
@@ -95,11 +95,12 @@ const NotificationItem = styled.TouchableOpacity`
   align-items: center;
   background-color: transparent; /* Set your desired background color */
   padding: 10px;
-  margin-top: 10px;
+  margin-top: 10px; 
+  margin-bottom: 10px;
 `;
 
 const NotificationIcon = styled(FontAwesomeIcon)`
-  color: ${(props) => (props.read ? '#888' : '#FF69B4')};
+  color: ${(props) => (props.read ? '#ccc' : '#4FD1C5')};
   margin-right: 10px;
 `;
 
