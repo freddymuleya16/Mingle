@@ -11,6 +11,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import ChatScreen from '../screens/ChatScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ChatHeader from '../components/ChatHeader';
+import ProfileScreen from '../screens/ProfileScreen';
 // import MatchesScreen from '../screens/MatchesScreen';
 // import NotificationsScreen from '../screens/NotificationsScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
@@ -22,44 +23,59 @@ const Stack = createStackNavigator();
 const MatchesStack = () =>
 (<Stack.Navigator  >
   <Stack.Screen name="MatchesScreen" component={HomeScreen} options={{
-        header: () => {
-          return <Header />
-        }
-      }} />
+    header: () => {
+      return <Header />
+    }
+  }} />
   <Stack.Screen name="ChatScreen" component={ChatScreen} options={{
-        header: () => {
-          return <ChatHeader />
-        }
-      }}  />
+    header: () => {
+      return <ChatHeader />
+    }
+  }} />
+
+</Stack.Navigator>)
+
+const SettingsStack = () =>
+(<Stack.Navigator  >
+  <Stack.Screen name="SettingsScreen" component={SettingsScreen} options={{
+    header: () => {
+      return <Header />
+    }
+  }} />
+  <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{
+    headerShown: false
+
+  }} />
+
 </Stack.Navigator>)
 
 //0710716579
 const TabNavigator = () => {
   return (
-    <Tab.Navigator 
+    <Tab.Navigator
       screenOptions={
         ({ route }) => ({
           tabBarLabelStyle: { fontFamily: 'kalam' },
-        tabBarActiveTintColor: '#4fd1c5',
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
+          tabBarActiveTintColor: '#4fd1c5',
+          tabBarIcon: ({ color, size }) => {
+            let iconName;
 
-          if (route.name === 'Home') {
-            iconName = 'home';
-          } else if (route.name === 'Matches') {
-            iconName = 'heart';
-          } else if (route.name === 'Notifications') {
-            iconName = 'bell';
-          } else if (route.name === 'Settings') {
-            iconName = 'cog';
-          }
+            if (route.name === 'Home') {
+              iconName = 'home';
+            } else if (route.name === 'Matches') {
+              iconName = 'heart';
+            } else if (route.name === 'Notifications') {
+              iconName = 'bell';
+            } else if (route.name === 'Settings') {
+              iconName = 'cog';
+            }
 
-          return <FontAwesomeIcon name={iconName} size={size} color={color} />;
-        },
-      })}
+            return <FontAwesomeIcon name={iconName} size={size} color={color} />;
+          },
+        })}
     >
       <Tab.Screen name="Home" component={MatchesStack} options={{
-        headerShown:false
+        headerShown: false
       }} />
       <Tab.Screen name="Matches" component={MatchesScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} options={{
@@ -67,7 +83,10 @@ const TabNavigator = () => {
           return <Header />
         }
       }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Settings" component={SettingsStack} options={{
+        headerShown: false,
+
+      }} />
     </Tab.Navigator>
   );
 };
