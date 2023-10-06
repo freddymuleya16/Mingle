@@ -64,7 +64,7 @@ const MatchesScreen = ({ navigation }) => {
         numColumns={2}
         data={matches}
         renderItem={({ item }) => (
-          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={() => { navigation.push('ChatScreen') }} />
+          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={() => { navigation.push('ChatScreen',{match:item}) }} />
         )}
       />
     </StyledContainer>

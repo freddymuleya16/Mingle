@@ -12,6 +12,7 @@ import ChatScreen from '../screens/ChatScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ChatHeader from '../components/ChatHeader';
 import ProfileScreen from '../screens/ProfileScreen';
+import UserDetails from '../screens/UserDetails';
 // import MatchesScreen from '../screens/MatchesScreen';
 // import NotificationsScreen from '../screens/NotificationsScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
@@ -27,11 +28,12 @@ const MatchesStack = () =>
       return <Header />
     }
   }} />
-  <Stack.Screen name="ChatScreen" component={ChatScreen} options={{
+  <Stack.Screen name="ChatScreen" component={ChatScreen} options={({route})=>({
     header: () => {
-      return <ChatHeader />
+      return <ChatHeader match={route.params.match}/>
     }
-  }} />
+  })} />
+  <Stack.Screen name="UserDetails" component={UserDetails} options={{ headerShown: false }} />
 
 </Stack.Navigator>)
 

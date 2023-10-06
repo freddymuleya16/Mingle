@@ -56,7 +56,8 @@ height: 100%;
 align-items: center;
 `
 
-const ChatScreen = () => {
+const ChatScreen = ({route}) => {
+  const match = route.params.match;
   return (
     <Container>
       {/* Your chat content goes here */}
