@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
+import {
   ButtonText,
   Container,
   Content,
@@ -24,17 +24,22 @@ import {
   TextArea,
   Title
 } from './styles';
-import { logout, uploadFormToFirebase } from '../../firebase/auth';
+import { getUser, logout, uploadFormToFirebase } from '../../firebase/auth';
 import useImagePicker from '../../hooks/useImagePicker';
-import { Alert, Image, TouchableOpacity } from 'react-native';
+import { Alert, Image, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { getUserLocation } from '../../utils/helpers';
 import { ErrorText } from '../../components/Input/styles';
 import { RadioButton } from 'react-native-paper';
 import Button from '../../components/Button';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { FIREBASE_DB } from '../../../firebase.config';
+import { setLoading } from '../../redux/actions/userActions';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ route, navigation }) => {
+  const edit = route.params?.edit;
   const [gender, setGender] = useState("");
   const [orientation, setOrientation] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -50,6 +55,78 @@ const ProfileScreen = () => {
   const [location, setLocation] = useState(null)
   const [errors, setErrors] = useState(null)
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (true) {
+      // Use onSnapshot to listen for changes in the user document
+      const unsubscribe = onSnapshot(
+        doc(FIREBASE_DB, `users/${getAuth().currentUser.uid}`),
+        (docSnapshot) => {
+          if (docSnapshot.exists()) {
+            // If the document exists, update the user state with the document data
+
+            try {
+              dispatch(setLoading(true))
+              const user = docSnapshot.data()
+              setGender(user.gender);
+              setOrientation(user.orientation);
+              setFirstName(user.firstName);
+              setLastName(user.lastName);
+              setAge(user.age);
+              const ageRange = user.ageRange.split("-");
+              setMinAge(ageRange[0]);
+              setMaxAge(ageRange[1]);
+              setDistance(user.distance);
+              setAboutMe(user.aboutMe);
+              setPictures([...user.pictures]);
+              setImage([...user.pictures])
+            } catch (error) {
+              // Handle error if any
+              console.log(error);
+            } finally {
+              dispatch(setLoading(false))
+            }
+          } else {
+            // If the document doesn't exist, handle it accordingly (e.g., set default values)
+
+          }
+        },
+        (error) => {
+          // Handle any errors that occur during the snapshot listening
+          console.error("Error fetching user document: ", error);
+        }
+      );
+
+      return () => unsubscribe();
+    }
+  }, [dispatch]);
+
+
+  const getUserDetails = useCallback(async () => {
+    try {
+      dispatch(setLoading(true))
+      const user = await getUser(getAuth().currentUser.uid);
+      setGender(user.gender);
+      setOrientation(user.orientation);
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setAge(user.age);
+      const ageRange = user.ageRange.split("-");
+      setMinAge(ageRange[0]);
+      setMaxAge(ageRange[1]);
+      setDistance(user.distance);
+      setAboutMe(user.aboutMe);
+      setPictures([...user.pictures]);
+      setImage([...user.pictures])
+      console.log(orientation)
+    } catch (error) {
+      // Handle error if any
+      console.log(error);
+    } finally {
+      dispatch(setLoading(false))
+    }
+  }, [dispatch])
+
 
   const handleSignout = () => {
     dispatch(logout());
@@ -147,7 +224,7 @@ const ProfileScreen = () => {
       );
       return;
     }
-    console.log('success') 
+    console.log('success')
     dispatch(
       uploadFormToFirebase(
         gender,
@@ -157,12 +234,32 @@ const ProfileScreen = () => {
         age,
         `${minAge}-${maxAge}`,
         distance,
-        pictures,
+        image,
         location,
-        aboutMe
+        aboutMe,
+        edit
       )
-    ).then(() => { 
+    ).then(() => {
+      if (edit) {
+        Alert.alert(
+          "Success",
+          `Profile updated successfully`,
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.pop();
+              },
+            },
+          ],
+          { cancelable: false, onDismiss: () => { } }
+        );
+      }
     });
+    if (edit) {
+      await getUserDetails()
+
+    }
 
   };
   return (
@@ -175,7 +272,7 @@ const ProfileScreen = () => {
             <RadioRow>
               <RadioContainer>
                 <RadioBoarder
-                    onPress={() => setGender('man')}>
+                  onPress={() => setGender('man')}>
                   <RadioInput
                     type="radio"
                     name="gender"
@@ -187,7 +284,7 @@ const ProfileScreen = () => {
               </RadioContainer>
               <RadioContainer>
                 <RadioBoarder
-                    onPress={() => setGender('woman')}>
+                  onPress={() => setGender('woman')}>
                   <RadioInput
                     type="radio"
                     name="gender"
@@ -205,13 +302,13 @@ const ProfileScreen = () => {
             <RadioRow>
               <RadioContainer>
                 <RadioBoarder
-                    onPress={() => setOrientation('men')}>
+                  onPress={() => setOrientation('man')}>
                   <RadioInput
                     type="radio"
                     name="orientation"
-                    value="men"
+                    value="man"
                     error={errors?.orientation}
-                    checked={orientation === 'men'}
+                    checked={orientation === 'man'}
                   />
                 </RadioBoarder>
 
@@ -219,7 +316,7 @@ const ProfileScreen = () => {
               </RadioContainer>
               <RadioContainer>
                 <RadioBoarder
-                    onPress={() => setOrientation('women')}>
+                  onPress={() => setOrientation('women')}>
                   <RadioInput
                     type="radio"
                     name="orientation"
@@ -231,7 +328,7 @@ const ProfileScreen = () => {
               </RadioContainer>
               <RadioContainer>
                 <RadioBoarder
-                    onPress={() => setOrientation('both')}>
+                  onPress={() => setOrientation('both')}>
                   <RadioInput
                     type="radio"
                     name="orientation"
@@ -328,7 +425,7 @@ const ProfileScreen = () => {
                 </Icon>
 
                 <Image
-                  source={{ uri: img.uri }}
+                  source={{ uri: img?.uri ?? img }}
                   style={{
                     width: '100%',
                     borderRadius: 5,
@@ -340,12 +437,15 @@ const ProfileScreen = () => {
             )
             )}
             <Divider />
-            <Button onPress={submitProfile}>
+            <Button onPress={submitProfile} >
               <ButtonText>Save</ButtonText>
             </Button>
-            <SignOutLink onPress={handleSignout}>
-              <SignOutText>Sign out</SignOutText>
-            </SignOutLink>
+            {!edit ?
+              <SignOutLink onPress={handleSignout}>
+                <SignOutText>Sign out</SignOutText>
+              </SignOutLink>
+              : <View style={{ marginBottom: 30 }}></View>
+            }
           </Content>
         </StyledScrollView>
       </StyledKeyboardAvoidingView>

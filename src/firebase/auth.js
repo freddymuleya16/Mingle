@@ -275,17 +275,19 @@ export const uploadFormToFirebase = (
     pictures = [...pictures];
 
     const pictureRefs = await Promise.all(
-      pictures.map((picture) => {
+      pictures.map(async (picture) => {
         if (typeof picture === 'string' || picture instanceof String) {
           return picture;
         } else {
           const fileRef = ref(
             storage,
-            `pictures/${Date.now()}-${picture.name}`
+            `pictures/${Date.now()}-${picture.filename}`
           );
+          const response = await fetch(picture.uri);
+          const blob = await response.blob();
 
           // Start uploading the picture and get the download URL
-          return uploadBytesResumable(fileRef, picture).then((snapshot) =>
+          return uploadBytesResumable(fileRef, blob).then((snapshot) =>
             getDownloadURL(snapshot.ref)
           );
         }
@@ -381,7 +383,7 @@ export const facebookSignIn = () => async (dispatch) => {
           // Accounts successfully linked.
           const credential = FacebookAuthProvider.credentialFromResult(result);
           const user = result.user;
-        //  console.log(credential, user)
+          //  console.log(credential, user)
           // ...
         }).catch((error) => {
           console.log(error)
@@ -482,21 +484,21 @@ export async function getUser(uid) {
     return errorMessage;
 
     return null;
-  }  
+  }
 }
 
 export async function getUsers(userIds) {
   const userDocs = [];
 
   if (userIds && userIds.length > 0) {
-      const q = query(
-          collection(FIREBASE_DB, "users"),
-          where(documentId(), "in", userIds)
-      );
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-          userDocs.push({ ...doc.data(), id: doc.id });
-      });
+    const q = query(
+      collection(FIREBASE_DB, "users"),
+      where(documentId(), "in", userIds)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      userDocs.push({ ...doc.data(), id: doc.id });
+    });
   }
 
   return userDocs;

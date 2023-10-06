@@ -18,7 +18,7 @@ const SettingsScreen = ({ navigation }) => {
 
   return (
     <Container>
-      <TouchableOpacity onPress={() => { navigation.push('ProfileScreen') }}>
+      <TouchableOpacity onPress={() => { navigation.push('ProfileScreen',{edit:true}) }}>
         <Card />
       </TouchableOpacity>
     </Container>
