@@ -73,6 +73,7 @@ const NotificationsScreen = () => {
 const NotificationTab = () => {
   return (<Tab.Navigator
     screenOptions={{
+      tabBarLabelStyle: { fontFamily: 'kalam' },
       tabBarIndicatorStyle: {
         backgroundColor: '#4fd1c5',
       }

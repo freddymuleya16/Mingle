@@ -27,7 +27,8 @@ const SettingsScreen = ({ navigation }) => {
 
 const SettingTab = () => {
   return (<Tab.Navigator
-    screenOptions={{
+    screenOptions={{      
+      tabBarLabelStyle: { fontFamily: 'kalam' },
       tabBarIndicatorStyle: {
         backgroundColor: '#4fd1c5',
       }

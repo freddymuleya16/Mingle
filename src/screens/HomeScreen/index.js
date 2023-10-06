@@ -83,6 +83,7 @@ const HomeScreen = () => {
   return (
     <Tab.Navigator
       screenOptions={{
+        tabBarLabelStyle: { fontFamily: 'kalam' },
         tabBarIndicatorStyle: {
           backgroundColor: '#4fd1c5',
         }
