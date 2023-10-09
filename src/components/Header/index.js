@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import styled from 'styled-components/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SafeAreaView } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSignOut } from '@fortawesome/free-solid-svg-icons';
+import ConfirmationModal from '../ConfirmationModal';
+import { logout } from '../../firebase/auth';
 
 const GradientContainer = styled(LinearGradient)`
   flex-direction: row;
@@ -43,7 +45,7 @@ const Username = styled.Text`
   margin-left: 10px;
 `;
 
-const IconContainer = styled.View` 
+const IconContainer = styled.TouchableOpacity` 
   justify-self: flex-end; 
   margin-right: 10px;
 `;
@@ -54,14 +56,15 @@ const Icon = styled(FontAwesomeIcon)`
 
 const App = () => {
   const user = useSelector((state) => state.user.userData);
-
+  const dispatch = useDispatch()
+  const [isModalVisible, setIsModalVisible] = useState(false);
   return (
     <GradientContainer
       colors={['#319795', '#4fd1c5']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
     >
-      <SafeArea style={{flex:1}}>
+      <SafeArea style={{ flex: 1 }}>
         <Content>
           <ProfileImage
             source={{ uri: user?.pictures[0] }}
@@ -71,10 +74,20 @@ const App = () => {
           <TextContainer>
             <Username>{user?.firstName} {user?.lastName}</Username>
           </TextContainer>
-          <IconContainer>
+          <IconContainer onPress={() => { setIsModalVisible(true) }}>
             <Icon icon={faSignOut} size={25} color='#fff' />
           </IconContainer>
         </Content>
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          onConfirm={() => {
+            setIsModalVisible(false)
+            dispatch(logout())
+          }}
+          onCancel={() => {
+            setIsModalVisible(false)
+          }}
+        />
       </SafeArea>
     </GradientContainer>
   );

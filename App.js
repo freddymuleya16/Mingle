@@ -4,7 +4,9 @@ import { persistor, store } from './src/redux/store/configureStore';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { useFonts } from '@expo-google-fonts/kalam';
+import { LogBox } from 'react-native';
 
+LogBox.ignoreAllLogs();
 export default function App() {
   
 

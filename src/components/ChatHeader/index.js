@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import styled from 'styled-components/native';
 import { useSelector } from 'react-redux';
@@ -6,6 +6,9 @@ import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faXmark, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/core';
+import { format, formatRelative } from 'date-fns';
+import ConfirmationModal from '../ConfirmationModal';
+import { logout } from '../../firebase/auth';
 
 const GradientContainer = styled(LinearGradient)`
   elevation: 4; /* Add elevation to create a shadow */
@@ -41,8 +44,15 @@ const Touchable = styled.TouchableOpacity`
 const Username = styled.Text`
   color: gray;
   font-family: 'kalam';
-  font-size: 18px;
+  font-size: 16px;
   margin-left: 10px;
+`;
+
+const LastSeen = styled.Text`
+color: gray;
+font-family: 'kalam';
+font-size: 12px;
+margin-left: 10px;
 `;
 
 const IconBox = styled.TouchableOpacity`
@@ -55,7 +65,7 @@ margin-left: 10px;
 `
 const XIcon = styled(FontAwesomeIcon)` 
 `
-const ChatHeader = ({ match }) => {
+const ChatHeader = ({ match}) => {
     const user = useSelector((state) => state.user.userData);
     const navigation = useNavigation()
 
@@ -68,19 +78,20 @@ const ChatHeader = ({ match }) => {
             <SafeArea>
                 <Content>
                     <Touchable onPress={() => { navigation.push('UserDetails', { match }) }} >
-                        <ProfileImage source={{ uri: user?.pictures[0] }} resizeMode="cover" />
+                        <ProfileImage source={{ uri: match?.pictures[0] }} resizeMode="cover" />
                     </Touchable >
                     <View style={{ width: '62%' }}>
-                        <Username>You matched with Glen Quagmire on 2023/08/27 20:58</Username>
-                        <Username>Last Seen</Username>
+                        <Username>You matched with {match.firstName} {match.lastName} on {format(match.matchDate?.toDate(), 'yyyy/MM/dd HH:mm ')}</Username>
+                        <LastSeen>Last Seen {match.lastSeen?formatRelative(match.lastSeen?.toDate(), new Date()):'Unknown'}</LastSeen>
                     </View>
 
 
-                    <IconBox>
+                    <IconBox onPress={()=>{navigation.pop()}}>
 
                         <XIcon icon={faXmark} size={40} color='#6b7280' />
                     </IconBox>
                 </Content>
+                
             </SafeArea>
         </GradientContainer>
     );

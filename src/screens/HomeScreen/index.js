@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { doc, onSnapshot, query } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase.config';
 import { getUsers } from '../../firebase/auth';
+import Sender from '../../components/Sender';
+import { isSubscribed } from '../../utils/helpers';
 
 const Tab = createMaterialTopTabNavigator();
 const StyledContainer = styled.View`
@@ -30,7 +32,56 @@ const MatchesScreen = ({ navigation }) => {
     if (FIREBASE_AUTH.currentUser) {
       const unsubscribe = onSnapshot(
         query(
-          doc(FIREBASE_DB, `users`, FIREBASE_AUTH.currentUser.uid),
+          doc(FIREBASE_DB, `users`, user.uid),
+        ),
+        (querySnapshot) => {
+          const data = querySnapshot.data();
+          getUsers(data.matches?.map((match) => {
+            if (match.matchId) {
+              return match.matchId
+            } else if (match.userId) {
+              return match.userId
+            } else {
+              return match
+            }
+          })).then((users) => {
+
+            const usersWitchMatchdate = users.map(obj1 => {
+              const match = data.matches.find(obj2 => obj1.id === obj2.matchId ||obj1.id === obj2.userId );
+ 
+              return { ...obj1, ...match };
+            }); 
+            setMatches([...usersWitchMatchdate])
+          })
+        }
+      );
+      return () => unsubscribe();
+    }
+
+  }, [])
+  return (
+    <StyledContainer>
+      <FlatList
+        contentContainerStyle={{}}
+        numColumns={2}
+        data={matches}
+        renderItem={({ item }) => (
+          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={() => { navigation.push('ChatScreen',{match:item}) }} />
+        )}
+      />
+    </StyledContainer>
+  );
+};
+
+const MessagesScreen = ({ navigation }) => {
+  const user = useSelector((state) => state.user.userData);
+  const [matches, setMatches] = useState([])
+
+  useEffect(() => {
+    if (FIREBASE_AUTH.currentUser) {
+      const unsubscribe = onSnapshot(
+        query(
+          doc(FIREBASE_DB, `users`, user.uid),
         ),
         (querySnapshot) => {
           const data = querySnapshot.data();
@@ -64,17 +115,9 @@ const MatchesScreen = ({ navigation }) => {
         numColumns={2}
         data={matches}
         renderItem={({ item }) => (
-          <Matcher data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }} onClick={() => { navigation.push('ChatScreen',{match:item}) }} />
+          <Sender onClick={() => { navigation.push('ChatScreen',{match:item}) }} data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }}  isSubscribed={isSubscribed(item)}/>
         )}
       />
-    </StyledContainer>
-  );
-};
-
-const MessagesScreen = () => {
-  return (
-    <StyledContainer>
-      <StyledText>Messages</StyledText>
     </StyledContainer>
   );
 };
