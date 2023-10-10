@@ -154,14 +154,15 @@ function Chat({ data }) {
 
         </ImageContainer>
 
-        {/* {data.audio && (
+         {data.audio && (
           <VoiceNotePlayer
           sourceUri={data.audio}
             isCurrent={data.isCurrent}
             controls
             paused
+            gender={data.gender}
           />
-        )} */}
+        )} 
         {data.message !== '' && (
           <TextBox isCurrent={data.isCurrent}
             gender={data.gender}>
