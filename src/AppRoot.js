@@ -6,6 +6,7 @@ import AppNavigator from './Navigation/AppNavigator';
 import Loading from './components/Loading';
 import { getUserData } from './redux/actions/userActions';
 import Banner from './components/Banner';
+import PremiumModal from './components/PremiumModal';
 
 const AppRoot = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const AppRoot = () => {
     <>
       <Loading />
       {user && <Banner user={user}/>}
+      <PremiumModal/>
       <AppNavigator />
     </>
 

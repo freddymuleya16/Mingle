@@ -3,25 +3,32 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../firebase.config';
 import { collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { calculateDistance } from '../../utils/helpers';
+import { calculateDistance, isSubscribed } from '../../utils/helpers';
 import Carousel from '../../components/Carousel';
 import { styled } from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHeart, faSadTear, faXmark } from '@fortawesome/free-solid-svg-icons';
+import useSwipeLimit from '../../hooks/useSwipeLimit';
+import { setIsPremiumModelOpen } from '../../redux/reducers/modelSlice';
 
 
 const deviceheight = Dimensions.get('window').height
 
 const MatchesScreen = () => {
+    const user = useSelector(state => state.user.userData);
+
     const dispatch = useDispatch()
-    const [potentialMatches, setPotentialMatches] = useState([]);
     const [images, setImages] = useState([])
     const [activeIndex, setActiveIndex] = useState(0);
     const [noMatches, setNoMatches] = useState(false);
-    const user = useSelector((state) => state.user.userData);
 
-
+    const dailySwipeLimit = 4; // Set your desired limit here
+    const { remainingSwipes, canSwipe, swipe, potentialMatches,setPotentialMatches } = useSwipeLimit(
+        user, 
+        dailySwipeLimit,
+        
+    );
     const handleNext = () => {
         setActiveIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
     };
@@ -47,13 +54,14 @@ const MatchesScreen = () => {
                 id: doc.id,
                 ...doc.data(),
             })).filter((potentialMatch) => {
- 
+
                 // Check if the potential match has a location
                 if (!potentialMatch.location) {
                     console.log(potentialMatch.firstName, " No Location")
                     return false;
 
                 }
+
 
                 // Check if the potential match is blocked by the current user
                 if (user.blockedUsers && user.blockedUsers.includes(potentialMatch.id)) {
@@ -100,7 +108,7 @@ const MatchesScreen = () => {
                 }
 
                 // Check if the potential match is the current user
-                let uid = FIREBASE_AUTH.currentUser.uid;
+                let uid = user?.uid;
                 if (uid == potentialMatch.id) {
                     console.log(potentialMatch.firstName, ` is me`)
                     return false;
@@ -117,68 +125,24 @@ const MatchesScreen = () => {
         return () => {
             unsubscribe();
         };
-    }, []);
+    }, []); 
+
     
-    const handleSwipe = async (swipe, matchId) => {
-        // Get user document and update swiping history
-        const usersCollection = collection(FIREBASE_DB, "users");
-        const userId = FIREBASE_AUTH.currentUser.uid;
-        const userDoc = doc(usersCollection, userId);
-        const userSnapshot = await getDoc(userDoc);
-        const userData = userSnapshot.data();
 
-        const updatedData = {
-            swipingHistory: {
-                [matchId]: swipe,
-                ...(userData.swipingHistory || {}),
-            },
-        };
+ 
 
-        user.swipingHistory = updatedData.swipingHistory
-
-        await updateDoc(userDoc, updatedData);
-
-        // Check if the user swiped right and the match also swiped right
-        if (swipe === "like") {
-            const matchDoc = doc(usersCollection, matchId);
-            const matchDocSnapshot = await getDoc(matchDoc);
-            const matchDocData = matchDocSnapshot.data();
-            if (
-                matchDocData.swipingHistory &&
-                matchDocData.swipingHistory[userId] === "like"
-            ) {
-                // Update both users' matches arrays
-                const userMatches = userData.matches
-                    ? [...userData.matches, { matchId, matchDate: new Date() }]
-                    : [{ matchId, matchDate: new Date() }];
-                const matchMatches = matchDocData.matches
-                    ? [...matchDocData.matches, { userId, matchDate: new Date() }]
-                    : [{ userId, matchDate: new Date() }];
-                const updatedUserData = { matches: userMatches };
-                const updatedMatchData = { matches: matchMatches };
-
-                await updateDoc(userDoc, updatedUserData);
-                await updateDoc(matchDoc, updatedMatchData);
-                const chatID = await getChatDocument(userId, matchId);
-                console.log(chatID, '-created chat')
-                // Display match success message
-                const fullName = `${matchDocData.firstName} ${matchDocData.lastName}`;
-                //toast.success(`Matched with ${fullName}`);
-                dispatch(
-                    addNotification(matchId, "New Match", `You matched with ${userData.firstName} ${userData.lastName}`)
-                );
-                dispatch(
-                    addNotification(userId, "New Match", `You matched with ${fullName}`)
-                );
-            }
-            // Remove match from potential matches and display next match (if available)
-            setPotentialMatches((matches) => {
-                const remainingMatches = matches.filter((match) => match.id !== matchId);
-                return remainingMatches;
-            });
+    const handleSwipe = async (swipeType, matchId) => { 
+        if (canSwipe || isSubscribed(user)) {
+            // Perform the swipe actiondebugger;
+            
+            await swipe(swipeType, matchId);
+ 
+        } else {
+            dispatch(setIsPremiumModelOpen(true))
+             
         }
+    };
 
-    }
     if (potentialMatches.length === 0) {
         if (true) {
           return (
