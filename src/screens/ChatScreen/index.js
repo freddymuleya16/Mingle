@@ -16,7 +16,8 @@ import KeyboardAvoidingComponent from '../../components/KeyboardAvoidingCoponent
 import { useRef } from 'react';
 import useImagePicker from '../../hooks/useImagePicker';
 import { ResizeMode, Video } from 'expo-av';
-import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import VoiceRecorder from '../../components/VoiceRecorder';
 
 const Container = styled.KeyboardAvoidingView`
   flex: 1;
@@ -138,6 +139,65 @@ const ChatScreen = ({ route }) => {
   const [currentFile, setCurrentFile] = useState(0)
   const scrollViewRef = useRef(null);
   const { image, pickImage, setImage } = useImagePicker(true, true)
+  const [recording, setRecording] = useState(null)
+
+  const sendVN = async (blob) => {
+    {
+      const storage = getStorage();
+
+      console.log(blob)
+      const fileRef = ref(
+        storage,
+        `Chats/${chatRef}/${Date.now()}-audio`
+      );
+      const response = await fetch(blob.uri);
+      const blob2 = await response.blob();
+      const uploadTask = uploadBytesResumable(fileRef, blob2)
+
+
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              //console.log('Upload is paused');
+              break;
+            case 'running':
+              //console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+          console.error('Error uploading file:', error);
+
+        },
+        async () => {
+          try {
+            //console.log('pics', pictureRef)
+          } catch (error) {
+            console.error("Error adding message:", error);
+          }
+        }
+      );
+
+      const snapshot = await uploadTask;
+
+      const audio = await getDownloadURL(snapshot.ref)
+
+      const newMessage = {
+        sender: user.uid,
+        timestamp: serverTimestamp(),
+        message: encryptMessage(message),
+        liked: false,
+        audio
+      };
+      await addMessage(chatRef, newMessage);
+    }
+  }
 
   useEffect(() => {
     if (image) setSelectedFiles([...image])
@@ -410,9 +470,11 @@ const ChatScreen = ({ route }) => {
               multiline={true}
               style={{ flex: 1, fontFamily: 'kalam' }} // Ensure the TextInput takes up all available width
             />
-            <FontAwesomeIcon icon={faMicrophone} size={30} color="#6b7280" />
+            
+            <VoiceRecorder user={user} recording={recording} setRecording={setRecording} sendVN={sendVN} />
+
           </InputContainer>
-          <GradientButton onPress={sendMessage}>
+          {!recording && <GradientButton onPress={sendMessage}>
             <Gradient
               colors={['#319795', '#4fd1c5']} // Add your gradient colors here
               start={{ x: 0, y: 0 }}
@@ -421,7 +483,7 @@ const ChatScreen = ({ route }) => {
 
               <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>Send</Text>
             </Gradient>
-          </GradientButton>
+          </GradientButton>}
         </MessageBox>
       </Container>
     </KeyboardAvoidingComponent>
