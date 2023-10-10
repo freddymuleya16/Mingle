@@ -76,7 +76,7 @@ const Banner = ({ user }) => {
   //   return null;
   // }
 
-  if (isDismissed || !isSubscribed(user)) {
+  if (isDismissed ||  isSubscribed(user)) {
     return null;
   }
 
