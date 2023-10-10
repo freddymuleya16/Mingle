@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSignOut } from '@fortawesome/free-solid-svg-icons';
 import ConfirmationModal from '../ConfirmationModal';
 import { logout } from '../../firebase/auth';
+import { isSubscribed } from '../../utils/helpers';
+import { Octicons } from '@expo/vector-icons';
 
 const GradientContainer = styled(LinearGradient)`
   flex-direction: row;
@@ -73,6 +75,9 @@ const App = () => {
           />
           <TextContainer>
             <Username>{user?.firstName} {user?.lastName}</Username>
+            {isSubscribed(user) && (
+              <Octicons name="verified" size={20} color="#fff" style={{ marginLeft: 4 }} />
+            )}
           </TextContainer>
           <IconContainer onPress={() => { setIsModalVisible(true) }}>
             <Icon icon={faSignOut} size={25} color='#fff' />
