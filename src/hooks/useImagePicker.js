@@ -1,9 +1,12 @@
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
+import { isSubscribed } from "../utils/helpers";
+import { useSelector } from "react-redux";
 
-const useImagePicker = (multiple = false,both=true) => {
+const useImagePicker = (multiple = false, both = true) => {
     const [image, setImage] = useState(null);
+    const user = useSelector(state => state.user.userData);
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -12,7 +15,7 @@ const useImagePicker = (multiple = false,both=true) => {
             return;
         }
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: both?ImagePicker.MediaTypeOptions.All:ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: both && isSubscribed(user) ? ImagePicker.MediaTypeOptions.All : ImagePicker.MediaTypeOptions.Images,
             allowsEditing: !multiple,
             aspect: [16, 9],
             quality: 1,
