@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
 import Chat from '../ChatBox';
+import { FlatList } from 'react-native';
  
 
 const Container = styled.View`
@@ -43,19 +44,27 @@ function ChatGroup({ date, chats, receiver, currentUser, chatRef }) {
 const ChatListContainer = styled.View``;
 
 function ChatList({ groupedChats, receiver, currentUser, chatRef }) {
+  const chatGroups = Object.entries(groupedChats).map(([date, chats]) => ({
+    date,
+    chats,
+  }));
+
+  const renderItem = ({ item }) => (
+    <ChatGroup
+      date={item.date}
+      chats={item.chats}
+      receiver={receiver}
+      currentUser={currentUser}
+      chatRef={chatRef}
+    />
+  );
+
   return (
-    <ChatListContainer>
-      {Object.entries(groupedChats).map(([date, chats]) => (
-        <ChatGroup
-          key={date}
-          date={date}
-          chats={chats}
-          receiver={receiver}
-          currentUser={currentUser}
-          chatRef={chatRef}
-        />
-      ))}
-    </ChatListContainer>
+    <FlatList
+      data={chatGroups}
+      keyExtractor={(item) => item.date}
+      renderItem={renderItem}
+    />
   );
 }
 

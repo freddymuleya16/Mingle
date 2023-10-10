@@ -2,7 +2,7 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 
-const useImagePicker = (multiple = false) => {
+const useImagePicker = (multiple = false,both=true) => {
     const [image, setImage] = useState(null);
 
     const pickImage = async () => {
@@ -12,7 +12,7 @@ const useImagePicker = (multiple = false) => {
             return;
         }
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: both?ImagePicker.MediaTypeOptions.All:ImagePicker.MediaTypeOptions.Images,
             allowsEditing: !multiple,
             aspect: [16, 9],
             quality: 1,
@@ -20,10 +20,12 @@ const useImagePicker = (multiple = false) => {
         });
 
         if (!result.canceled) {
+            console.log(result.assets)
             const res = result.assets.map((asset) => {
                 return {
                     uri: asset.uri,
-                    filename: asset.fileName
+                    filename: asset.fileName,
+                    type: asset.type
                 }
             })
             if (multiple) {

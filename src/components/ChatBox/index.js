@@ -8,6 +8,7 @@ import { Audio, ResizeMode, Video } from 'expo-av';
 import { useState } from 'react';
 import AudioPlayer from '../AudioPlayer';
 import { FIREBASE_DB } from '../../../firebase.config';
+import VoiceNotePlayer from '../VoiceNotePlayer';
 
 const Container = styled.View`
   width: 100%;
@@ -154,13 +155,13 @@ function Chat({ data }) {
         </ImageContainer>
 
         {/* {data.audio && (
-                    <MessageAudio
-                        source={{ uri: data.audio }}
-                        isCurrent={data.isCurrent}
-                        controls
-                        paused
-                    />
-                )} */}
+          <VoiceNotePlayer
+          sourceUri={data.audio}
+            isCurrent={data.isCurrent}
+            controls
+            paused
+          />
+        )} */}
         {data.message !== '' && (
           <TextBox isCurrent={data.isCurrent}
             gender={data.gender}>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image } from 'react-native';
 import styled from 'styled-components/native';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, Octicons } from '@expo/vector-icons';
 import { decryptMessage, getChatDocumentWithoutCreating } from '../../utils/helpers';
 import { getAuth } from 'firebase/auth';
 import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
@@ -15,6 +15,7 @@ const Container = styled.TouchableOpacity`
   width: 100%;
   height: 60px;
   align-items: center;
+  margin-bottom: 10px;
 `;
 
 const ProfileImage = styled.Image`
@@ -40,12 +41,18 @@ const MessageText = styled.Text`
   font-family: 'kalam';
   font-size: 14px;
   color: #555;
+  justify-content: space-between;
 `;
 
 const IconContainer = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
+const Icons = styled(FontAwesome5)`
+    margin-right: 10px;
+    padding: 5px;
+`
 
 const Sender = ({ data, onClick, isSubscribed }) => {
   const [chatId, setChatId] = useState(null);
@@ -81,14 +88,15 @@ const Sender = ({ data, onClick, isSubscribed }) => {
           querySnapshot.forEach((doc) => {
             messages.push({ ...doc.data(), id: doc.id, message: decryptMessage(doc.data().message) });
           });
-          setMessage(messages[0] ?? '-');
+     
+          setMessage(messages[0] ?? '-');     console.log(messages[0].message,message === null || message == '-')
         }
       );
       return () => unsubscribe();
     }
   }, [chatId]);
 
-  if (message == null || message == '-') {
+  if (message === null || message == '-') { 
     return <></>;
   }
 
@@ -99,43 +107,41 @@ const Sender = ({ data, onClick, isSubscribed }) => {
         <SenderName>
           {data.name} {data.surname}{' '}
           {isSubscribed && (
-            <FontAwesome5
-              name="icon-name-here" // Replace with your subscription icon name
-              size={16}
-              color="#319795"
-              style={{ marginLeft: 4 }}
-            />
+            
+            <Octicons name="verified" size={16} color="#319795" style={{ marginLeft: 4 }} />
           )}
         </SenderName>
         <MessageText>
           {message == null ? 'Loading...' : message.videos && message.videos.length > 0 ? (
             <>
               {message.sender == user?.uid && (
-                <FontAwesome5 name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
+                <Icons name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
               )}
-              <FontAwesome5 name="video" size={16} color="#319795" style={{ marginRight: 4 }} />
-              {message?.message ? message?.message : 'Video'}
+              {" "}
+              <Icons name="video" size={16} color="#319795"   />
+              {message?.message ? message?.message : ' Video'}
             </>
           ) : message.images && message.images.length > 0 ? (
             <>
               {message.sender == user?.uid && (
-                <FontAwesome5 name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
+                <Icons name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
               )}
-              <FontAwesome5 name="image" size={16} color="#319795" style={{ marginRight: 4 }} />
-              {message?.message ? message?.message : 'Image'}
+              {" "}
+              <Icons name="image" size={16} color="#319795" style={{ marginRight: 4 }} />
+              {message?.message ? message?.message : ' Image'}
             </>
           ) : message.audio ? (
             <>
               {message.sender == user?.uid && (
-                <FontAwesome5 name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
+                <Icons name="reply" size={16} color="#319795" style={{ marginRight: 4 }} />
               )}
-              <FontAwesome5 name="microphone" size={16} color="#319795" style={{ marginRight: 4 }} />
+              <Icons name="microphone" size={16} color="#319795" style={{ marginRight: 4 }} />
               Audio
             </>
           ) : (
             <>
               {message.sender == user?.uid && (
-                <FontAwesome5 name="reply" size={16} color="#319795" />
+                <Icons name="reply" size={16} color="#319795" />
               )}
               {' '}{message?.text}{message?.message}
             </>

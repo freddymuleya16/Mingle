@@ -110,9 +110,8 @@ const MessagesScreen = ({ navigation }) => {
   }, [])
   return (
     <StyledContainer>
-      <FlatList
-        contentContainerStyle={{}}
-        numColumns={2}
+      <FlatList 
+        numColumns={1}
         data={matches}
         renderItem={({ item }) => (
           <Sender onClick={() => { navigation.push('ChatScreen',{match:item}) }} data={{ pictures: item.pictures, name: item.firstName, surname: item.lastName, id: item.id }}  isSubscribed={isSubscribed(item)}/>
